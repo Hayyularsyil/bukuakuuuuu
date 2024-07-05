@@ -112,11 +112,16 @@
         #add-book-container {
             margin-top: 40px;
         }
-        #add-book-container input, #add-book-container button {
+        #add-book-container label, #add-book-container input, #add-book-container select, #add-book-container button {
             display: block;
+            width: 20%;
             margin: 10px auto;
             padding: 10px;
             font-size: 16px;
+            box-sizing: border-box;
+        }
+        #add-book-container input, #add-book-container select {
+            width: 20%;
         }
         .main-content section {
             display: none;
@@ -188,9 +193,13 @@
             <section id="dashboard" class="active">
                 <h1>Tambah Buku Baru</h1>
                 <div id="add-book-container">
-                    <input type="text" id="new-title" placeholder="Masukkan judul buku...">
-                    <input type="text" id="new-author" placeholder="Masukkan nama pengarang...">
-                    <input type="text" id="new-genre" placeholder="Masukkan genre buku...">
+                    <input type="text" id="new-title" placeholder="Masukkan judul buku...">                   
+                    <input type="text" id="new-author" placeholder="Masukkan nama pengarang...">                    
+                    <input type="date" id="new-date">                 
+                    <select id="new-genre">
+                        <option value="" disabled selected>Pilih genre buku...</option>
+                    </select>
+                    
                     <button id="add-book-button">Tambah Buku</button>
                 </div>
             </section>
@@ -258,26 +267,33 @@
         const addBookButton = document.getElementById('add-book-button');
         const newTitleInput = document.getElementById('new-title');
         const newAuthorInput = document.getElementById('new-author');
-        const newGenreInput = document.getElementById('new-genre');
+        const newDateInput = document.getElementById('new-date');
+        const newGenreSelect = document.getElementById('new-genre');
         const bookList = document.getElementById('book-list');
         const books = [];
+
+        function populateGenreDropdown() {
+            for (const genre in genres) {
+                const option = document.createElement('option');
+                option.value = genre;
+                option.textContent = genre;
+                newGenreSelect.appendChild(option);
+            }
+        }
+
+        populateGenreDropdown();
 
         addBookButton.addEventListener('click', function() {
             const newTitle = newTitleInput.value.trim();
             const newAuthor = newAuthorInput.value.trim();
-            const newGenre = newGenreInput.value.trim();
+            const newDate = newDateInput.value.trim();
+            const newGenre = newGenreSelect.value.trim();
 
-            if (newTitle && newAuthor && newGenre) {
-                if (!genres[newGenre]) {
-                    genres[newGenre] = {
-                        description: `Genre baru ditambahkan: ${newGenre}`
-                    };
-                    displayGenres();
-                }
-
+            if (newTitle && newAuthor && newDate && newGenre) {
                 const newBook = {
                     title: newTitle,
                     author: newAuthor,
+                    date: newDate,
                     genre: newGenre
                 };
 
@@ -287,7 +303,8 @@
                 alert('Buku baru berhasil ditambahkan!');
                 newTitleInput.value = '';
                 newAuthorInput.value = '';
-                newGenreInput.value = '';
+                newDateInput.value = '';
+                newGenreSelect.value = '';
             } else {
                 alert('Harap isi semua bidang input!');
             }
@@ -301,7 +318,8 @@
                 bookItem.innerHTML = `
                     <strong>Judul:</strong> ${book.title} <br>
                     <strong>Pengarang:</strong> ${book.author} <br>
-                    <strong>Genre:</strong> ${book.genre}
+                    <strong>Genre:</strong> ${book.genre} <br>
+                    <strong>Tanggal Ditambahkan:</strong> ${book.date} 
                     <button class="delete-button" onclick="deleteBook(${index})">Hapus</button>
                 `;
                 bookList.appendChild(bookItem);
